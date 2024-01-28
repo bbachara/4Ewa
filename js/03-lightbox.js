@@ -10,51 +10,36 @@ document.addEventListener("DOMContentLoaded", function () {
     (_, index) => `file${index + 1}.jpg`
   );
 
+  // Iterate over each image filename and create <li> elements with <img> tags
   const galleryMarkup = imageFilenames.map((filename) => {
-    const div = document.createElement(`div`);
-    div.className = `gallery__item`;
+    const li = document.createElement("li");
 
     const link = document.createElement(`a`);
-    link.className = "gallery__link";
+    link.className = "gallery__item";
     link.href = `images/${filename}`;
     const img = document.createElement("img");
     img.className = "gallery__image";
 
     // Set the src attribute of the <img> tag to the image filename
     img.src = `images/${filename}`; // Assuming the images folder is named "images"
-
-    img.dataset.source = `images/${filename}`;
     img.alt = filename; // Set alt attribute for accessibility
+    img.dataset.source = `images/${filename}`;
 
     link.appendChild(img);
-    div.appendChild(link);
-    return div;
+    li.appendChild(link);
+
+    return li;
   });
 
   imageList.append(...galleryMarkup);
 
-  // Initialize lightbox instances
-  galleryMarkup.forEach((div) => {
-    const instance = basicLightbox.create(
-      `
-      <img src="${div.querySelector("img").dataset.source}" alt="${
-        div.querySelector("img").alt
-      }">
-    `,
-      {
-        onShow: (instance) => {
-          document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-              instance.close();
-            }
-          });
-        },
-      }
-    );
+  let gallery = new SimpleLightbox(".gallery a", {
+    captionsData: "alt",
+    captionDelay: 250,
+    captionsDataAlt: "Image description",
+  });
 
-    div.addEventListener("click", (event) => {
-      event.preventDefault();
-      instance.show();
-    });
+  gallery.on("show.simplelightbox", function () {
+    console.log("Lightbox is shown");
   });
 });
